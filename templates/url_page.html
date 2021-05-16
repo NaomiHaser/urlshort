@@ -3,13 +3,16 @@
 
 {% block content %}
 <form action="#", method="post">
-    <label for="url">Hello, Please enter an URL(http://):</label>
+        <br>
+        <br>
+    <center><label for="url">Hello, Please enter a URL(http://):</label>
     <!-- will take url as input -->
+
     <input type="url" name="name" id="url"
        placeholder="https://urlname.com"
        pattern="https://.*" size="60"
        required>
 
-    <input type="submit" value="SUBMIT" class="btn btn-primary">
+    <input type="submit" value="SUBMIT" class="btn btn-primary"></center>
 </form>
 {% endblock %}
