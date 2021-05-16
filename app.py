@@ -52,7 +52,7 @@ def home():
             db.session.commit() #changes to db
             return redirect(url_for("show_shorturl", url=short_url))
     else:
-        return render_template('url_page.html')
+        return render_template('enter_urls.html')
 
 @app.route('/<short_url>') ##redirect to the longer url using the short url
 def redirection(short_url):
