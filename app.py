@@ -1,3 +1,5 @@
+#Naomi Haser Cyberark project
+##create a url shortener using Python Flask and SQLAlchemy
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import random
@@ -27,11 +29,11 @@ class Urls(db.Model):
 def shorten_url():
     allletters = string.ascii_lowercase + string.ascii_uppercase ##52characters
     while True:
-        rand_letters = random.choices(allletters, k=5)
-        rand_letters = "".join(rand_letters) ##convert list to string
-        short_url = Urls.query.filter_by(short=rand_letters).first() ##check shorturl does not exist
+        randomletters = random.choices(allletters, k=5)
+        randomletters = "".join(randomletters) ##convert list to string
+        short_url = Urls.query.filter_by(short=randomletters).first() ##check shorturl does not exist
         if not short_url:
-            return rand_letters
+            return randomletters
 
 #decorator function - check the ending of URL to see where to go
 #post and get methods to transfer data
@@ -45,7 +47,6 @@ def home():
             return redirect(url_for("show_shorturl", url=found_url.short))
         else: # create short url
             short_url = shorten_url()
-            print(short_url)
             new_url = Urls(input_url, short_url)
             db.session.add(new_url) #add new row to database w new url
             db.session.commit() #changes to db
@@ -59,7 +60,7 @@ def redirection(short_url):
     if long_url:
         return redirect(long_url.long)
     else:
-        return f'<h2>This URL does not exist</h2>'
+        return f'<h2>This short URL does not exist</h2>'
 
 @app.route('/display/<url>')
 def show_shorturl(url):
