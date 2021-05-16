@@ -3,53 +3,54 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 import string
 import os
-
+#Using a daabase to store the long and short url connections- SQLAlchemy (python)
 app = Flask(__name__)
-##app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-
-##app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db' ##urls.db is the name of the database
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app) #store the object into the database db
 
 @app.before_first_request
 def create_tables():
     db.create_all()
 
 class Urls(db.Model):
-    id_ = db.Column("id_", db.Integer, primary_key=True)
-    long = db.Column("long", db.String())
+    id_ = db.Column("id_", db.Integer, primary_key=True) #each will have a unique key
+    long = db.Column("long", db.String()) #store the short and long
     short = db.Column("short", db.String(10))
 
+##constructor
     def __init__(self, long, short):
         self.long = long
         self.short = short
 
 def shorten_url():
-    letters = string.ascii_lowercase + string.ascii_uppercase
+    letters = string.ascii_lowercase + string.ascii_uppercase ##52characters
     while True:
-        rand_letters = random.choices(letters, k=3)
-        rand_letters = "".join(rand_letters)
-        short_url = Urls.query.filter_by(short=rand_letters).first()
+        rand_letters = random.choices(letters, k=4)
+        rand_letters = "".join(rand_letters) ##convert list to string
+        short_url = Urls.query.filter_by(short=rand_letters).first() ##check shorturl does not exist
         if not short_url:
             return rand_letters
 
-
+#decorator function - check the ending of URL to see where to go
+#post and get methods to transfer data
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    if request.method == "POST":
-        url_received = request.form["nm"]
+    if request.method == "POST": ##got a new url to use
+        url_received = request.form["name"]
         found_url = Urls.query.filter_by(long=url_received).first()
 
-        if found_url:
+        if found_url: #if the url is already in database
             return redirect(url_for("display_short_url", url=found_url.short))
-        else:
+        else: # create short url
             short_url = shorten_url()
             print(short_url)
             new_url = Urls(url_received, short_url)
-            db.session.add(new_url)
-            db.session.commit()
+            db.session.add(new_url) #add new row to database w new url
+            db.session.commit() #changes to db
             return redirect(url_for("display_short_url", url=short_url))
     else:
         return render_template('url_page.html')
